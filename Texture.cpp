@@ -1,4 +1,6 @@
 
+/*
+
 #include "Texture.hpp"
 
 core::Texture::Texture(const char* texturePath, const char* textureType, GLuint slot) {
@@ -25,3 +27,4 @@ void core::Texture::Delete() {
 
 }
 
+*/

@@ -3,6 +3,11 @@
 
 #include<iostream>
 
+
+#pragma once
+
+#define STB_IMAGE_IMPLEMENTATION
+#include<stb/stb_image.h>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
@@ -63,8 +68,8 @@ void core::Engine::run() {
 
 	// texture 
 
-	Texture woodTexture("wood_plank.jpg", "AAAAA", 0);
-	Texture breakTexture("block_break.jpg", "AAAAA", 0);
+	//Texture woodTexture("wood_plank.jpg", "AAAAA", 0);
+	//Texture breakTexture("block_break.jpg", "AAAAA", 0);
 
 	unsigned int texture1;
 	glGenTextures(1, &texture1);

@@ -1,5 +1,9 @@
 
+/*
+
 #define STB_IMAGE_IMPLEMENTATION
+
+#pragma once
 
 #include<glad/glad.h>
 #include<stb/stb_image.h>
@@ -30,3 +34,5 @@ namespace core {
 	};
 
 }
+
+*/
