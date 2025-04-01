@@ -125,9 +125,11 @@ void core::Engine::run() {
 		shader.Activate();
 
 		float timeValue = glfwGetTime();
-		float g = (sin(timeValue / 2.0f) + 0.5f);
-		int vertexColorLocation = glGetUniformLocation(shader.Id, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, g, 0.0f, 1.0f);
+		float r = (0.5f * sin(timeValue / 0.5f) + 0.5f);
+		float g = (0.5f * sin(timeValue / 0.39f) + 0.5f);
+		float b = (0.5f * sin(timeValue / 0.61f) + 0.5f);
+		int vertexColorLocation = glGetUniformLocation(shader.Id, "newColor");
+		glUniform4f(vertexColorLocation, r, g, b, 1.0f);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
