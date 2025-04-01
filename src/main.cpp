@@ -9,5 +9,7 @@ int main() {
 
 	engine.run();
 
+	system("pause");
+
 	return 0;
 }
