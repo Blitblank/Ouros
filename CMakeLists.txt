@@ -28,3 +28,9 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} 
     ${PROJECT_SOURCE_DIR}/Libraries/lib/glfw3.lib
 )
+
+# suppress 4099 warning because im silly and am using the release binaries for the glfw library and not the debug version
+target_link_options(${PROJECT_NAME} 
+    PRIVATE
+        /ignore:4099
+)
