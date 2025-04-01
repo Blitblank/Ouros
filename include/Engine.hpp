@@ -21,7 +21,7 @@ namespace core {
 
 		Window window{ WIDTH, HEIGHT, "Ouros" };
 
-		Shader shader{ "basic.vert", "basic.frag" };
+		Shader shader{ "../src/shaders/basic.vert", "../src/shaders/basic.frag" };
 
 	};
 

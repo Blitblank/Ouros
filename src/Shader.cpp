@@ -23,8 +23,9 @@ std::string get_file_contents(const char* filename) {
 	catch (const std::ifstream::failure e)
 	{
 		std::cout << "ERROR: SHADER FILE CANNOT BE READ" << std::endl;
-		return "";
 	}
+	
+	return "";
 
 }
 

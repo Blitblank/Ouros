@@ -18,9 +18,7 @@ cmake --build .
 :: run if build successful
 if %ERRORLEVEL% == 0 (
     echo Build successful. Running application...
-    ./Debug/ouros.exe
+    .\Debug\ouros.exe
 ) else (
     echo Build failed!
 )
-
-pause

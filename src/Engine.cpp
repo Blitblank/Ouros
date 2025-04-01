@@ -83,7 +83,7 @@ void core::Engine::run() {
 	stbi_set_flip_vertically_on_load(true);
 
 	int width, height, nrChannels;
-	unsigned char* data = stbi_load("Assets/Textures/wood_plank.jpg", &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load("../Assets/Textures/wood_plank.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -97,7 +97,7 @@ void core::Engine::run() {
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
 
-	data = stbi_load("Assets/Textures/block_break.jpg", &width, &height, &nrChannels, 0);
+	data = stbi_load("../Assets/Textures/block_break.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -109,6 +109,7 @@ void core::Engine::run() {
 	stbi_image_free(data);
 
 	shader.Activate();
+	shader.set("texture1", 0);
 	shader.set("texture2", 1);
 
 
