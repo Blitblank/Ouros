@@ -1,14 +1,11 @@
 
-#include "Engine.hpp"
-
-#include<iostream>
-
-
 #pragma once
 
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
+#include<iostream>
 
+#include "Engine.hpp"
 #include "Window.hpp"
 #include "Texture.hpp"
 #include "EBO.hpp"
@@ -21,7 +18,7 @@ core::Engine::Engine() {
 
 void core::Engine::run() {
 
-
+	// hard coded geometry. to be moved into a mesh class then moved into a model class
 	std::vector<Vertex> vertices = {
 		Vertex{glm::vec3{0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{1.0f, 1.0f}}, // top right
 		Vertex{glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{1.0f, 0.0f}}, // bottom right
@@ -36,20 +33,19 @@ void core::Engine::run() {
 		2, 1, 3
 	};
 
-	// geometry
+	// geometry binding. each object is unique to each model/mesh
+	core::VAO vao; // vertex array object 
+	vao.Bind(); // organizes vertex data into the array vvvv see below
 
-	core::VAO vao;
-	vao.Bind();
+	core::VBO vbo(vertices); // vertex buffer object
+	core::EBO ebo(indices); // element buffer object
 
-	core::VBO vbo(vertices);
-	core::EBO ebo(indices);
-
-	// Links VBO attributes such as coordinates and colors to VAO
+	// links attributes from the vbo to the vao. all the numbers are for organizing the data into a single stream
 	vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
 	vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
 	vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
 	vao.LinkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
-	// Unbind all to prevent accidentally modifying them
+	// unbind for memory saftey
 	vao.Unbind();
 	vbo.Unbind();
 	ebo.Unbind();
@@ -59,21 +55,22 @@ void core::Engine::run() {
 
 
 	// texture 
-
 	Texture woodTexture("wood_plank.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	woodTexture.texUnit(shader, "tex0", 0);
 	Texture breakTexture("block_break.jpg", GL_TEXTURE_2D, GL_TEXTURE1, GL_RGB, GL_UNSIGNED_BYTE);
 	breakTexture.texUnit(shader, "tex1", 0);
 
+	// link shader values. shder.set(x) allows variable x to be used in the shader
 	shader.Activate();
 	shader.set("texture1", 0);
 	shader.set("texture2", 1);
 
-
+	// update loop. (might move this later)
 	while (!glfwWindowShouldClose(window.getGLFWwindow())) {
 
 		// input
 		window.processInput(window.getGLFWwindow());
+		// todo input system
 
 		// rendering commands 
 		glClearColor(0.06f, 0.05f, 0.1f, 1.0f);
@@ -88,13 +85,16 @@ void core::Engine::run() {
 		int vertexColorLocation = glGetUniformLocation(shader.Id, "newColor");
 		glUniform4f(vertexColorLocation, r, g, b, 1.0f);
 
+		// only binds to active texture, have to specify which to bind to
 		glActiveTexture(GL_TEXTURE0);
 		woodTexture.Bind();
 		glActiveTexture(GL_TEXTURE1);
 		breakTexture.Bind();
 
+		// activate all the vertex data
 		vao.Bind();
 
+		// draw that baybee !!
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // fill mode
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
