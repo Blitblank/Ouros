@@ -6,8 +6,6 @@
 
 #pragma once
 
-#define STB_IMAGE_IMPLEMENTATION
-#include<stb/stb_image.h>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
@@ -62,45 +60,10 @@ void core::Engine::run() {
 
 	// texture 
 
-	//Texture woodTexture("wood_plank.jpg", "AAAAA", 0);
-	//Texture breakTexture("block_break.jpg", "AAAAA", 0);
-
-	unsigned int texture1;
-	glGenTextures(1, &texture1);
-	glBindTexture(GL_TEXTURE_2D, texture1);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	stbi_set_flip_vertically_on_load(true);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load("../Assets/Textures/wood_plank.jpg", &width, &height, &nrChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		std::cout << "ERROR: CANNOT LOAD TEXTURE" << std::endl;
-	}
-
-
-	unsigned int texture2;
-	glGenTextures(1, &texture2);
-	glBindTexture(GL_TEXTURE_2D, texture2);
-
-	data = stbi_load("../Assets/Textures/block_break.jpg", &width, &height, &nrChannels, 0);
-	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else {
-		std::cout << "ERROR: CANNOT LOAD TEXTURE" << std::endl;
-	}
-
-	stbi_image_free(data);
+	Texture woodTexture("wood_plank.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	woodTexture.texUnit(shader, "tex0", 0);
+	Texture breakTexture("block_break.jpg", GL_TEXTURE_2D, GL_TEXTURE1, GL_RGB, GL_UNSIGNED_BYTE);
+	breakTexture.texUnit(shader, "tex1", 0);
 
 	shader.Activate();
 	shader.set("texture1", 0);
@@ -126,9 +89,9 @@ void core::Engine::run() {
 		glUniform4f(vertexColorLocation, r, g, b, 1.0f);
 
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture1);
+		woodTexture.Bind();
 		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, texture2);
+		breakTexture.Bind();
 
 		vao.Bind();
 

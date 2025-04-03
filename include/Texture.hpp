@@ -1,8 +1,4 @@
 
-/*
-
-#define STB_IMAGE_IMPLEMENTATION
-
 #pragma once
 
 #include<glad/glad.h>
@@ -10,14 +6,11 @@
 
 #include "Shader.hpp"
 
-const char* assetPath = "Assets/Textures/";
-
 namespace core {
-
 	class Texture {
 	public:
 
-		Texture(const char* texturePath, const char* textureType, GLuint slot);
+		Texture(std::string texturePath, GLenum textureType, GLuint slot, GLenum format, GLenum pixelType);
 		~Texture() = default;
 
 		void texUnit(Shader& shader, const char* uniform, GLuint unit);
@@ -26,13 +19,13 @@ namespace core {
 		void Delete();
 
 		GLuint Id;
-		const char* type;
+		GLuint type;
 		GLuint unit;
 
 	private:
 
+		const std::string assetPath = "../Assets/Textures/";
+
 	};
 
 }
-
-*/
