@@ -68,6 +68,8 @@ void core::Engine::run() {
 	// update loop. (might move this later)
 	while (!glfwWindowShouldClose(window.getGLFWwindow())) {
 
+		window.updateTitle();
+
 		// input
 		window.processInput(window.getGLFWwindow());
 		// todo input system

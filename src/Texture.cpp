@@ -12,7 +12,6 @@ core::Texture::Texture(std::string texturePath, GLenum textureType, GLuint slot,
 
 		// read image from file
 		std::string path = assetPath + texturePath;
-		std::cout << path << std::endl;
 		unsigned char* bytes = stbi_load(path.c_str(), &widthImg, &heightImg, &numColCh, 0);
 		if(!bytes) {
 			std::cout << "ERROR: CANNOT LOAD TEXTURE. ERR PATH: " << path << std::endl;

@@ -18,6 +18,8 @@ namespace core {
 
 		void processInput(GLFWwindow* window);
 
+		void updateTitle();
+
 	private:
 
 		static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
@@ -28,6 +30,12 @@ namespace core {
 		const std::string windowName;
 
 		GLFWwindow* window;
+
+		// variables for timetracking to display fps
+		double prevTime = 0.0;
+		double crntTime = 0.0;
+		double timeDiff;
+		unsigned int counter = 0;
 
 	};
 

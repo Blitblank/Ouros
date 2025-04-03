@@ -5,6 +5,14 @@ cmake_minimum_required(VERSION 4.0)
 # project
 project (ouros)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if (MSVC)
+    add_compile_options(/std:c++20)
+endif()
+
 # sources
 file(GLOB SOURCES
     "src/*.cpp"

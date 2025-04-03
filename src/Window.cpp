@@ -2,6 +2,7 @@
 #include "Window.hpp"
 
 #include<iostream>
+#include<format>
 
 core::Window::Window(int w, int h, std::string name) : width(w), height(h), windowName(name) {
 
@@ -61,5 +62,21 @@ void core::Window::init() {
 void core::Window::processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+}
+
+void core::Window::updateTitle() {
+	crntTime = glfwGetTime();
+	timeDiff = crntTime - prevTime;
+	counter++;
+
+	if (timeDiff >= 1.0 / 2.0) {
+		float FPS = (1.0 / timeDiff) * counter;
+		float ms = (timeDiff / counter) * 1000.0;
+		std::string newTitle = std::format("Ouros - {:8.2f} FPS / {:8.2f} ms", FPS, ms);
+		glfwSetWindowTitle(window, newTitle.c_str());
+
+		prevTime = crntTime;
+		counter = 0;
 	}
 }
