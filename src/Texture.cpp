@@ -36,7 +36,7 @@ core::Texture::Texture(std::string texturePath, GLenum textureType, GLuint slot,
 		glTexImage2D(textureType, 0, GL_RGBA, widthImg, heightImg, 0, format, pixelType, bytes); 
 		// https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml for resources on format types (the type of data to be loaded: depth, rgb, rgba) and pixelTypes (float mostly here)
 		// format is the pixel data from the image itself as its stored in the file. we use GL_RGBA in the internalFormat parameter to load it in a way that the shader uses
-		// WARNING !!! pngs have an alpha channel whilke jpgs do not, so this will crash if format=GL_RGBA is used with a jpg
+		// WARNING !!! pngs have an alpha channel whilke jpgs do not, so this will crash if format=GL_RGBA is used with a jpg (not the internal format, the shader auto truncates it)
 		glGenerateMipmap(textureType);
 	
 		// unbind/clear memory
