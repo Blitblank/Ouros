@@ -13,6 +13,9 @@
 
 #include "Window.hpp"
 #include "Texture.hpp"
+#include "EBO.hpp"
+#include "VAO.hpp"
+#include "VBO.hpp"
 
 core::Engine::Engine() {
 	std::cout << "Engine running..." << std::endl;
@@ -21,49 +24,40 @@ core::Engine::Engine() {
 void core::Engine::run() {
 
 
-	float vertices[] = {
-		0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // top right
-		0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top left
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-		0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.5f, 1.0f, // top middle
+	std::vector<Vertex> vertices = {
+		Vertex{glm::vec3{0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{1.0f, 1.0f}}, // top right
+		Vertex{glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{1.0f, 0.0f}}, // bottom right
+		Vertex{glm::vec3{-0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{0.0f, 1.0f}}, // top left
+		Vertex{glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec2{0.0f, 0.0f}}, // bottom left
+		Vertex{glm::vec3{0.0f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{0.5f, 1.0f}}, // top middle
 	};
 
-	unsigned int indices[] = {
+	std::vector<unsigned int> indices = {
 		//3, 1, 4,
 		2, 0, 1,
 		2, 1, 3
 	};
 
+	// geometry
 
-	// vertex buffer object
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
+	core::VAO vao;
+	vao.Bind();
 
-	// element array buffer
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
+	core::VBO vbo(vertices);
+	core::EBO ebo(indices);
 
-	// vertex array object
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
+	// Links VBO attributes such as coordinates and colors to VAO
+	vao.LinkAttrib(vbo, 0, 3, GL_FLOAT, sizeof(Vertex), (void*)0);
+	vao.LinkAttrib(vbo, 1, 3, GL_FLOAT, sizeof(Vertex), (void*)(3 * sizeof(float)));
+	vao.LinkAttrib(vbo, 2, 3, GL_FLOAT, sizeof(Vertex), (void*)(6 * sizeof(float)));
+	vao.LinkAttrib(vbo, 3, 2, GL_FLOAT, sizeof(Vertex), (void*)(9 * sizeof(float)));
+	// Unbind all to prevent accidentally modifying them
+	vao.Unbind();
+	vbo.Unbind();
+	ebo.Unbind();
+	
+	//GLuint uniID = glGetUniformLocation(shader.Id, "scale");
 
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6*sizeof(float)));
-	glEnableVertexAttribArray(2);
 
 
 	// texture 
@@ -136,12 +130,11 @@ void core::Engine::run() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		glBindVertexArray(VAO);
+		vao.Bind();
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // fill mode
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 
 		// check and call events and swap buffers
