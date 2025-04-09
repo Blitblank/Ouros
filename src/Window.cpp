@@ -47,6 +47,7 @@ void core::Window::init() {
 	}
 
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(0); // disable vsync
 	//glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 

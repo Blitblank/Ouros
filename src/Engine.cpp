@@ -1,9 +1,12 @@
 
 #pragma once
 
-#include<glad/glad.h>
-#include<GLFW/glfw3.h>
-#include<iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 #include "Engine.hpp"
 #include "Window.hpp"
@@ -20,17 +23,20 @@ void core::Engine::run() {
 
 	// hard coded geometry. to be moved into a mesh class then moved into a model class
 	std::vector<Vertex> vertices = {
-		Vertex{glm::vec3{0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{1.0f, 1.0f}}, // top right
-		Vertex{glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{1.0f, 0.0f}}, // bottom right
-		Vertex{glm::vec3{-0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{0.0f, 1.0f}}, // top left
-		Vertex{glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec2{0.0f, 0.0f}}, // bottom left
-		Vertex{glm::vec3{0.0f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{0.5f, 1.0f}}, // top middle
+		Vertex{glm::vec3{-0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{0.2f, 0.3f}}, // top right
+		Vertex{glm::vec3{-0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{0.8f, 0.3f}}, // bottom right
+		Vertex{glm::vec3{0.5f, -0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 1.0f, 0.0f}, glm::vec2{0.2f, 0.3f}}, // top left
+		Vertex{glm::vec3{0.5f, 0.5f, 0.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 0.0f, 0.0f}, glm::vec2{0.8f, 0.3f}}, // bottom left
+		Vertex{glm::vec3{0.0f, 0.0f, 0.8f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{0.0f, 0.0f, 1.0f}, glm::vec2{0.5f, 0.9f}}, // top middle
 	};
 
 	std::vector<unsigned int> indices = {
-		//3, 1, 4,
-		2, 0, 1,
-		2, 1, 3
+		0, 1, 2,
+		0, 2, 3,
+		0, 1, 4,
+		1, 2, 4,
+		2, 3, 4,
+		3, 0, 4,
 	};
 
 	// geometry binding. each object is unique to each model/mesh
@@ -52,10 +58,8 @@ void core::Engine::run() {
 	
 	//GLuint uniID = glGetUniformLocation(shader.Id, "scale");
 
-
-
 	// texture 
-	Texture woodTexture("wood_plank.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
+	Texture woodTexture("obamna.jpg", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGB, GL_UNSIGNED_BYTE);
 	woodTexture.texUnit(shader, "tex0", 0);
 	Texture breakTexture("block_break.jpg", GL_TEXTURE_2D, GL_TEXTURE1, GL_RGB, GL_UNSIGNED_BYTE);
 	breakTexture.texUnit(shader, "tex1", 0);
@@ -64,6 +68,8 @@ void core::Engine::run() {
 	shader.Activate();
 	shader.set("texture1", 0);
 	shader.set("texture2", 1);
+
+	glEnable(GL_DEPTH_TEST);
 
 	// update loop. (might move this later)
 	while (!glfwWindowShouldClose(window.getGLFWwindow())) {
@@ -76,15 +82,34 @@ void core::Engine::run() {
 
 		// rendering commands 
 		glClearColor(0.06f, 0.05f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Activate();
+
+		// init matrices
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 proj = glm::mat4(1.0f);
+		// assign matrices
+		model = glm::rotate(model, float(glm::radians(glfwGetTime()*200.0)), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, sin(glfwGetTime()*5.0f)*0.15));
+		view = glm::translate(view, glm::vec3(0.0f, -2.0f, -0.5f));
+		proj = glm::perspective(glm::radians(45.0f), (float)window.width / window.height, 0.1f, 100.0f);
+		proj = glm::rotate(proj, float(glm::radians(90.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
+		proj = glm::rotate(proj, float(glm::radians(180.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+		// send matrices to vertex shader
+		int modelLoc = glGetUniformLocation(shader.Id, "model");
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		int viewLoc = glGetUniformLocation(shader.Id, "view");
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		int projLoc = glGetUniformLocation(shader.Id, "proj");
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
 		float timeValue = glfwGetTime();
 		float r = (0.5f * sin(timeValue / 0.5f) + 0.5f);
 		float g = (0.5f * sin(timeValue / 0.39f) + 0.5f);
 		float b = (0.5f * sin(timeValue / 0.61f) + 0.5f);
-		int vertexColorLocation = glGetUniformLocation(shader.Id, "newColor");
+		unsigned int vertexColorLocation = glGetUniformLocation(shader.Id, "newColor");
 		glUniform4f(vertexColorLocation, r, g, b, 1.0f);
 
 		// only binds to active texture, have to specify which to bind to

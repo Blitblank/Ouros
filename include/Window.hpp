@@ -20,13 +20,14 @@ namespace core {
 
 		void updateTitle();
 
+		int width; 
+		int height;
+
 	private:
 
 		static void frameBufferResizeCallback(GLFWwindow* window, int width, int height);
 		void init();
 
-		int width; 
-		int height;
 		const std::string windowName;
 
 		GLFWwindow* window;
